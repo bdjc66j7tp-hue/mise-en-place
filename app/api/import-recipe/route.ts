@@ -1,0 +1,65 @@
+import Anthropic from '@anthropic-ai/sdk'
+import { NextRequest, NextResponse } from 'next/server'
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const { text } = await request.json()
+
+    if (!text) {
+      return NextResponse.json({ error: 'Recipe text is required' }, { status: 400 })
+    }
+
+    const message = await anthropic.messages.create({
+      model: 'claude-opus-4-5',
+      max_tokens: 2000,
+      messages: [
+        {
+          role: 'user',
+          content: `You are a recipe extraction assistant. Extract and format the following recipe into a clean structured format.
+
+Recipe:
+${text}
+
+Return as JSON only:
+{
+  "title": "Recipe name",
+  "description": "Brief description",
+  "prepTime": "e.g. 15 minutes",
+  "cookTime": "e.g. 30 minutes",
+  "servings": 4,
+  "difficulty": "Easy/Medium/Hard",
+  "ingredients": ["ingredient 1", "ingredient 2"],
+  "steps": ["Step 1", "Step 2"],
+  "tags": ["tag1", "tag2"]
+}
+
+Return ONLY the JSON, no other text.`
+        }
+      ]
+    })
+
+    const content = message.content[0]
+if (content.type !== 'text') {
+  throw new Error('Unexpected response type')
+}
+
+const cleaned = content.text
+  .replace(/```json/g, '')
+  .replace(/```/g, '')
+  .trim()
+
+const recipe = JSON.parse(cleaned)
+    return NextResponse.json({ recipe })
+
+  } catch (error) {
+    console.error('Recipe import error:', error)
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+    }
+    return NextResponse.json({ error: 'Failed to import recipe. Please try again.' }, { status: 500 })
+  }
+}
