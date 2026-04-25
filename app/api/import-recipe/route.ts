@@ -60,7 +60,6 @@ Return ONLY the JSON, no other text.`
 
     const recipe = JSON.parse(cleaned)
 
-    // Save to Supabase
     const { data, error } = await supabase
       .from('recipes')
       .insert([{
@@ -80,9 +79,8 @@ Return ONLY the JSON, no other text.`
       .single()
 
     if (error) {
-      console.error('Supabase error full:', JSON.stringify(error, null, 2))
-      // Still return the recipe even if save fails
-      return NextResponse.json({ recipe, saved: false })
+      console.error('Supabase error:', JSON.stringify(error))
+      return NextResponse.json({ recipe, saved: false, error: error.message })
     }
 
     return NextResponse.json({ recipe: data, saved: true })
