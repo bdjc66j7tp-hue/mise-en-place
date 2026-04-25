@@ -8,9 +8,9 @@ export default function Nav() {
   return (
     <nav style={{ background: '#27500A', position: 'sticky', top: 0, zIndex: 100 }}>
       <div style={{ padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '62px' }}>
-        
+
         {/* LOGO */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{ width: '34px', height: '34px', background: '#3B6D11', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <svg viewBox="0 0 18 18" fill="none" width="18" height="18">
               <path d="M2 14C2 9 4 5 9 3.5C14 5 16 9 16 14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -27,24 +27,24 @@ export default function Nav() {
               Everything in its place
             </div>
           </div>
-        </div>
+        </a>
 
         {/* DESKTOP LINKS */}
         <div style={{ display: 'flex', gap: '22px', alignItems: 'center' }} className="desktop-nav">
-          <a href="#" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Discover</a>
-          <a href="#" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Learn</a>
-          <a href="#" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Community</a>
-          <a href="#" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Pro</a>
+          <a href="/recipes" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>My Recipes</a>
+          <a href="/import" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Import</a>
+          <a href="/learn" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Learn</a>
+          <a href="/community" style={{ fontSize: '13px', color: '#97C459', textDecoration: 'none' }}>Community</a>
         </div>
 
         {/* DESKTOP CTA */}
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }} className="desktop-nav">
-          <button style={{ fontSize: '12px', color: '#97C459', cursor: 'pointer', background: 'none', border: 'none' }}>
-            Sign in
-          </button>
-          <button style={{ background: '#3B6D11', color: 'white', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', cursor: 'pointer' }}>
-            Download free
-          </button>
+          <a href="/admin" style={{ fontSize: '12px', color: '#97C459', cursor: 'pointer', textDecoration: 'none' }}>
+            Admin
+          </a>
+          <a href="/import" style={{ background: '#3B6D11', color: 'white', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '12px', cursor: 'pointer', textDecoration: 'none' }}>
+            + Import recipe
+          </a>
         </div>
 
         {/* HAMBURGER — mobile only */}
@@ -63,19 +63,18 @@ export default function Nav() {
       {menuOpen && (
         <div style={{ background: '#3B6D11', padding: '16px 24px 24px', borderTop: '0.5px solid #27500A' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <a href="#" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Discover</a>
-            <a href="#" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Learn</a>
-            <a href="#" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Community</a>
-            <a href="#" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Pro</a>
+            <a href="/recipes" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>My Recipes</a>
+            <a href="/import" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Import</a>
+            <a href="/learn" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Learn</a>
+            <a href="/community" style={{ fontSize: '15px', color: '#C0DD97', textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>Community</a>
             <hr style={{ border: 'none', borderTop: '0.5px solid #27500A' }}/>
-            <button style={{ background: '#EAF3DE', color: '#27500A', border: 'none', borderRadius: '10px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
-              Download free
-            </button>
+            <a href="/import" style={{ background: '#EAF3DE', color: '#27500A', border: 'none', borderRadius: '10px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', textDecoration: 'none', textAlign: 'center' }} onClick={() => setMenuOpen(false)}>
+              + Import recipe
+            </a>
           </div>
         </div>
       )}
 
-      {/* RESPONSIVE STYLES */}
       <style>{`
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
