@@ -66,49 +66,51 @@ export default async function RecipesPage() {
         {recipes && recipes.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
             {recipes.map((recipe) => (
-              <div key={recipe.id} style={{ background: 'white', borderRadius: '14px', border: '0.5px solid #C0DD97', overflow: 'hidden', cursor: 'pointer' }}>
-                
-                {/* Card header */}
-                <div style={{ background: '#27500A', padding: '16px 18px' }}>
-                  <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                    {recipe.tags?.slice(0, 2).map((tag: string, i: number) => (
-                      <span key={i} style={{ background: '#3B6D11', color: '#C0DD97', fontSize: '9px', padding: '2px 8px', borderRadius: '20px' }}>
-                        {tag}
-                      </span>
-                    ))}
+              <a key={recipe.id} href={`/recipes/${recipe.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+                <div style={{ background: 'white', borderRadius: '14px', border: '0.5px solid #C0DD97', overflow: 'hidden', cursor: 'pointer' }}>
+                  
+                  {/* Card header */}
+                  <div style={{ background: '#27500A', padding: '16px 18px' }}>
+                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                      {recipe.tags?.slice(0, 2).map((tag: string, i: number) => (
+                        <span key={i} style={{ background: '#3B6D11', color: '#C0DD97', fontSize: '9px', padding: '2px 8px', borderRadius: '20px' }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'italic', color: 'white', fontWeight: '400', margin: '0 0 4px 0', lineHeight: '1.3' }}>
+                      {recipe.title}
+                    </h2>
+                    <p style={{ fontSize: '11px', color: '#97C459', lineHeight: '1.5', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {recipe.description}
+                    </p>
                   </div>
-                  <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'italic', color: 'white', fontWeight: '400', margin: '0 0 4px 0', lineHeight: '1.3' }}>
-                    {recipe.title}
-                  </h2>
-                  <p style={{ fontSize: '11px', color: '#97C459', lineHeight: '1.5', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {recipe.description}
-                  </p>
-                </div>
 
-                {/* Card body */}
-                <div style={{ padding: '12px 18px' }}>
-                  <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                    {[
-                      { label: 'Prep', value: recipe.prep_time },
-                      { label: 'Cook', value: recipe.cook_time },
-                      { label: 'Serves', value: recipe.servings },
-                    ].map((stat, i) => (
-                      <div key={i} style={{ flex: 1, textAlign: 'center', background: '#EAF3DE', borderRadius: '8px', padding: '6px 4px' }}>
-                        <div style={{ fontSize: '8px', color: '#639922', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>{stat.label}</div>
-                        <div style={{ fontSize: '11px', color: '#27500A', fontWeight: '500' }}>{stat.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '10px', color: '#639922' }}>
-                      {recipe.difficulty}
-                    </span>
-                    <span style={{ fontSize: '10px', color: '#97C459' }}>
-                      {new Date(recipe.created_at).toLocaleDateString()}
-                    </span>
+                  {/* Card body */}
+                  <div style={{ padding: '12px 18px' }}>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                      {[
+                        { label: 'Prep', value: recipe.prep_time },
+                        { label: 'Cook', value: recipe.cook_time },
+                        { label: 'Serves', value: recipe.servings },
+                      ].map((stat, i) => (
+                        <div key={i} style={{ flex: 1, textAlign: 'center', background: '#EAF3DE', borderRadius: '8px', padding: '6px 4px' }}>
+                          <div style={{ fontSize: '8px', color: '#639922', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>{stat.label}</div>
+                          <div style={{ fontSize: '11px', color: '#27500A', fontWeight: '500' }}>{stat.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '10px', color: '#639922' }}>
+                        {recipe.difficulty}
+                      </span>
+                      <span style={{ fontSize: '10px', color: '#97C459' }}>
+                        {new Date(recipe.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         )}
