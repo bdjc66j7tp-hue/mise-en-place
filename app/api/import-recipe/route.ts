@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       try {
         console.log('Firecrawl fetching:', url)
         const scraped = await firecrawl.scrapeUrl(url)
-        const pageContent = scraped?.data?.content || scraped?.data?.markdown || scraped?.data?.text || null
+        const pageContent = scraped?.data?.content || scraped?.data?.markdown || null
         console.log('Page content found:', pageContent ? 'YES' : 'NO')
 
         if (pageContent) {
