@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import FirecrawlApp from '@mendable/firecrawl-js'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
@@ -11,12 +12,37 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+const firecrawl = new FirecrawlApp({
+  apiKey: process.env.FIRECRAWL_API_KEY!
+})
+
 export async function POST(request: NextRequest) {
   try {
-    const { text, source_url, user_email } = await request.json()
+    const { text, url, user_email } = await request.json()
 
-    if (!text) {
-      return NextResponse.json({ error: 'Recipe text is required' }, { status: 400 })
+    if (!text && !url) {
+      return NextResponse.json({ error: 'Please provide a URL or recipe text' }, { status: 400 })
+    }
+
+    let recipeText = text
+    const source_url = url || null
+
+    if (url) {
+      try {
+        console.log('Firecrawl fetching:', url)
+        const scraped = await firecrawl.scrapeUrl(url)
+        const pageContent = scraped?.data?.content || scraped?.data?.markdown || scraped?.data?.text || null
+        console.log('Page content found:', pageContent ? 'YES' : 'NO')
+
+        if (pageContent) {
+          recipeText = pageContent
+        } else {
+          return NextResponse.json({ error: 'Could not read that URL. Try pasting the recipe text instead.' }, { status: 400 })
+        }
+      } catch (err) {
+        console.error('Firecrawl error:', err)
+        return NextResponse.json({ error: 'Could not fetch that URL. Try pasting the recipe text instead.' }, { status: 400 })
+      }
     }
 
     const message = await anthropic.messages.create({
@@ -25,25 +51,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'user',
-          content: `You are a recipe extraction assistant. Extract and format the following recipe into a clean structured format.
-
-Recipe:
-${text}
-
-Return as JSON only:
-{
-  "title": "Recipe name",
-  "description": "Brief description",
-  "prep_time": "e.g. 15 minutes",
-  "cook_time": "e.g. 30 minutes",
-  "servings": 4,
-  "difficulty": "Easy/Medium/Hard",
-  "ingredients": ["ingredient 1", "ingredient 2"],
-  "steps": ["Step 1", "Step 2"],
-  "tags": ["tag1", "tag2"]
-}
-
-Return ONLY the JSON, no other text.`
+          content: 'Extract this recipe and return JSON only with these fields: title, description, prep_time, cook_time, servings (number), difficulty, ingredients (array), steps (array), tags (array). Recipe: ' + recipeText
         }
       ]
     })
@@ -72,7 +80,7 @@ Return ONLY the JSON, no other text.`
         ingredients: recipe.ingredients,
         steps: recipe.steps,
         tags: recipe.tags,
-        source_url: source_url || null,
+        source_url: source_url,
         user_email: user_email || null,
       }])
       .select()
