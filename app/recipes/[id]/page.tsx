@@ -20,7 +20,6 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
   return (
     <div style={{ minHeight: '100vh', background: '#EAF3DE' }}>
 
-      {/* Header */}
       <div style={{ background: '#27500A', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '30px', height: '30px', background: '#3B6D11', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -40,8 +39,37 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
         </a>
       </div>
 
-      {/* Recipe header */}
-      <div style={{ background: '#27500A', padding: '32px 24px 40px' }}>
+      {/* Photo — user uploaded or placeholder */}
+      {recipe.photo_url && recipe.photo_url.startsWith('/') ? (
+        <div style={{ width: '100%', height: '280px', overflow: 'hidden' }}>
+          <img
+            src={recipe.photo_url}
+            alt={recipe.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+      ) : (
+        <div style={{ width: '100%', background: '#27500A', padding: '24px', textAlign: 'center' }}>
+          <div style={{ maxWidth: '680px', margin: '0 auto', background: '#3B6D11', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', border: '0.5px solid #639922' }}>
+            <svg viewBox="0 0 20 20" fill="none" width="20" height="20" style={{ flexShrink: 0 }}>
+              <rect x="2" y="4" width="16" height="13" rx="2" stroke="#97C459" strokeWidth="1.3"/>
+              <circle cx="7" cy="9" r="2" stroke="#97C459" strokeWidth="1.3"/>
+              <path d="M2 14l4-3 3 2.5 3-4 6 4.5" stroke="#97C459" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '12px', color: '#C0DD97', fontWeight: '500', marginBottom: '2px' }}>Add your own photo</div>
+              <div style={{ fontSize: '11px', color: '#97C459', lineHeight: '1.5' }}>
+                Out of respect for the recipe publisher we don't display their photos — but we'd love to see yours. Add a photo of your version of this dish.
+              </div>
+            </div>
+            <button style={{ background: '#EAF3DE', color: '#27500A', border: 'none', borderRadius: '8px', padding: '8px 14px', fontSize: '11px', fontWeight: '500', cursor: 'pointer', flexShrink: 0 }}>
+              + Add photo
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ background: '#27500A', padding: '24px 24px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
             {recipe.tags?.map((tag: string, i: number) => (
@@ -72,10 +100,8 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      {/* Recipe body */}
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '32px 24px' }}>
 
-        {/* Ingredients */}
         <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
           <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
             Ingredients
@@ -88,7 +114,6 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
           ))}
         </div>
 
-        {/* Method */}
         <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
           <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
             Method
@@ -103,7 +128,6 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
           ))}
         </div>
 
-        {/* Notes */}
         {recipe.notes && (
           <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
             <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
@@ -113,14 +137,13 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
           </div>
         )}
 
-        {/* Source */}
         {recipe.source_url && (
           <div style={{ background: '#EAF3DE', borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M1 11L11 1M7.5 1H11v3.5" stroke="#3B6D11" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <a href={recipe.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#3B6D11', textDecoration: 'none' }}>
-              View original recipe
+              View original recipe — {new URL(recipe.source_url).hostname.replace('www.', '')}
             </a>
           </div>
         )}

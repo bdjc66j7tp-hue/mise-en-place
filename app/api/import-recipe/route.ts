@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
 
     let recipeText = text
     const source_url = url || null
+    let photo_url = null
 
     if (url) {
       try {
@@ -36,6 +37,14 @@ export async function POST(request: NextRequest) {
 
         if (pageContent) {
           recipeText = pageContent
+
+          // Try to get photo from scraped metadata
+          if (scraped?.data?.metadata?.ogImage) {
+            photo_url = scraped.data.metadata.ogImage
+          } else if (scraped?.data?.metadata?.image) {
+            photo_url = scraped.data.metadata.image
+          }
+          console.log('Photo URL found:', photo_url ? 'YES' : 'NO')
         } else {
           return NextResponse.json({ error: 'Could not read that URL. Try pasting the recipe text instead.' }, { status: 400 })
         }
@@ -81,6 +90,7 @@ export async function POST(request: NextRequest) {
         steps: recipe.steps,
         tags: recipe.tags,
         source_url: source_url,
+        photo_url: photo_url,
         user_email: user_email || null,
       }])
       .select()
