@@ -37,7 +37,6 @@ export default async function RecipesPage() {
 
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
         
-        {/* Page title */}
         <div style={{ marginBottom: '28px' }}>
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '28px', fontStyle: 'italic', color: '#3B6D11', fontWeight: '400', marginBottom: '4px' }}>
             My Recipe Collection
@@ -47,7 +46,6 @@ export default async function RecipesPage() {
           </p>
         </div>
 
-        {/* Empty state */}
         {(!recipes || recipes.length === 0) && (
           <div style={{ background: 'white', borderRadius: '16px', padding: '60px', textAlign: 'center', border: '0.5px solid #C0DD97' }}>
             <div style={{ fontFamily: 'Georgia, serif', fontSize: '20px', fontStyle: 'italic', color: '#3B6D11', marginBottom: '8px' }}>
@@ -62,12 +60,11 @@ export default async function RecipesPage() {
           </div>
         )}
 
-        {/* Recipe grid */}
         {recipes && recipes.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
             {recipes.map((recipe) => (
               <a key={recipe.id} href={`/recipes/${recipe.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                <div style={{ background: 'white', borderRadius: '14px', border: '0.5px solid #C0DD97', overflow: 'hidden', cursor: 'pointer' }}>
+                <div style={{ background: 'white', borderRadius: '14px', border: '0.5px solid #C0DD97', overflow: 'hidden', cursor: 'pointer', height: '100%' }}>
                   
                   {/* Card header */}
                   <div style={{ background: '#27500A', padding: '16px 18px' }}>
@@ -100,7 +97,7 @@ export default async function RecipesPage() {
                         </div>
                       ))}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontSize: '10px', color: '#639922' }}>
                         {recipe.difficulty}
                       </span>
@@ -108,6 +105,18 @@ export default async function RecipesPage() {
                         {new Date(recipe.created_at).toLocaleDateString()}
                       </span>
                     </div>
+
+                    {/* Source credit */}
+                    {recipe.source_url && (
+                      <div style={{ borderTop: '0.5px solid #EAF3DE', paddingTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                          <path d="M1 8L8 1M5.5 1H8v2.5" stroke="#97C459" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span style={{ fontSize: '10px', color: '#97C459' }}>
+                          {new URL(recipe.source_url).hostname.replace('www.', '')}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </a>
