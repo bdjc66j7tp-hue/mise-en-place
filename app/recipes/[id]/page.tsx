@@ -39,35 +39,21 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
         </a>
       </div>
 
-      {/* Photo — user uploaded or placeholder */}
-      {recipe.photo_url && recipe.photo_url.startsWith('/') ? (
-        <div style={{ width: '100%', height: '280px', overflow: 'hidden' }}>
-          <img
-            src={recipe.photo_url}
-            alt={recipe.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </div>
-      ) : (
-        <div style={{ width: '100%', background: '#27500A', padding: '24px', textAlign: 'center' }}>
-          <div style={{ maxWidth: '680px', margin: '0 auto', background: '#3B6D11', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', border: '0.5px solid #639922' }}>
-            <svg viewBox="0 0 20 20" fill="none" width="20" height="20" style={{ flexShrink: 0 }}>
-              <rect x="2" y="4" width="16" height="13" rx="2" stroke="#97C459" strokeWidth="1.3"/>
-              <circle cx="7" cy="9" r="2" stroke="#97C459" strokeWidth="1.3"/>
-              <path d="M2 14l4-3 3 2.5 3-4 6 4.5" stroke="#97C459" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '12px', color: '#C0DD97', fontWeight: '500', marginBottom: '2px' }}>Add your own photo</div>
-              <div style={{ fontSize: '11px', color: '#97C459', lineHeight: '1.5' }}>
-                Out of respect for the recipe publisher we don't display their photos — but we'd love to see yours. Add a photo of your version of this dish.
-              </div>
+      <div style={{ width: '100%', background: '#27500A', padding: '16px 24px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', background: '#3B6D11', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', border: '0.5px solid #639922' }}>
+          <svg viewBox="0 0 20 20" fill="none" width="20" height="20" style={{ flexShrink: 0 }}>
+            <rect x="2" y="4" width="16" height="13" rx="2" stroke="#97C459" strokeWidth="1.3"/>
+            <circle cx="7" cy="9" r="2" stroke="#97C459" strokeWidth="1.3"/>
+            <path d="M2 14l4-3 3 2.5 3-4 6 4.5" stroke="#97C459" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '12px', color: '#C0DD97', fontWeight: '500', marginBottom: '2px' }}>Add your own photo</div>
+            <div style={{ fontSize: '11px', color: '#97C459', lineHeight: '1.5' }}>
+              Out of respect for the recipe publisher we don't display their photos — but we'd love to see yours.
             </div>
-            <button style={{ background: '#EAF3DE', color: '#27500A', border: 'none', borderRadius: '8px', padding: '8px 14px', fontSize: '11px', fontWeight: '500', cursor: 'pointer', flexShrink: 0 }}>
-              + Add photo
-            </button>
           </div>
         </div>
-      )}
+      </div>
 
       <div style={{ background: '#27500A', padding: '24px 24px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
@@ -127,15 +113,6 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
             </div>
           ))}
         </div>
-
-        {recipe.notes && (
-          <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
-            <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-              Notes
-            </h2>
-            <p style={{ fontSize: '14px', color: '#27500A', lineHeight: '1.7', margin: 0 }}>{recipe.notes}</p>
-          </div>
-        )}
 
         {recipe.source_url && (
           <div style={{ background: '#EAF3DE', borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
