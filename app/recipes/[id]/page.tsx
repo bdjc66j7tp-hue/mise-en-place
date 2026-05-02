@@ -1,19 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
+import PhotoUpload from './PhotoUpload'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+export const dynamic = 'force-dynamic'
+
 export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  const { data: recipe } = await supabase
-    .from('recipes')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const { data: recipe } = await supabase.from('recipes').select('*').eq('id', id).single()
 
   if (!recipe) notFound()
 
@@ -30,51 +29,26 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
               <circle cx="9" cy="11" r="1.3" fill="white"/>
             </svg>
           </div>
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'italic', color: '#C0DD97' }}>
-            Mise en Place
-          </div>
+          <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'italic', color: '#C0DD97' }}>Mise en Place</div>
         </div>
-        <a href="/recipes" style={{ fontSize: '12px', color: '#97C459', textDecoration: 'none' }}>
-          ← My recipes
-        </a>
-      </div>
-
-      <div style={{ width: '100%', background: '#27500A', padding: '16px 24px' }}>
-        <div style={{ maxWidth: '680px', margin: '0 auto', background: '#3B6D11', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px', border: '0.5px solid #639922' }}>
-          <svg viewBox="0 0 20 20" fill="none" width="20" height="20" style={{ flexShrink: 0 }}>
-            <rect x="2" y="4" width="16" height="13" rx="2" stroke="#97C459" strokeWidth="1.3"/>
-            <circle cx="7" cy="9" r="2" stroke="#97C459" strokeWidth="1.3"/>
-            <path d="M2 14l4-3 3 2.5 3-4 6 4.5" stroke="#97C459" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '12px', color: '#C0DD97', fontWeight: '500', marginBottom: '2px' }}>Add your own photo</div>
-            <div style={{ fontSize: '11px', color: '#97C459', lineHeight: '1.5' }}>
-              Out of respect for the recipe publisher we don't display their photos — but we'd love to see yours.
-            </div>
-          </div>
-        </div>
+        <a href="/recipes" style={{ fontSize: '12px', color: '#97C459', textDecoration: 'none' }}>← My recipes</a>
       </div>
 
       <div style={{ background: '#27500A', padding: '24px 24px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+          <PhotoUpload recipeId={recipe.id} photoUrl={recipe.photo_url} recipeTitle={recipe.title} />
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px', marginTop: '20px' }}>
             {recipe.tags?.map((tag: string, i: number) => (
-              <span key={i} style={{ background: '#3B6D11', color: '#C0DD97', fontSize: '10px', padding: '3px 10px', borderRadius: '20px', border: '0.5px solid #639922' }}>
-                {tag}
-              </span>
+              <span key={i} style={{ background: '#3B6D11', color: '#C0DD97', fontSize: '10px', padding: '3px 10px', borderRadius: '20px', border: '0.5px solid #639922' }}>{tag}</span>
             ))}
           </div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontStyle: 'italic', color: 'white', fontWeight: '400', marginBottom: '8px', lineHeight: '1.2' }}>
-            {recipe.title}
-          </h1>
-          <p style={{ fontSize: '14px', color: '#97C459', lineHeight: '1.7', marginBottom: '20px' }}>
-            {recipe.description}
-          </p>
+          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontStyle: 'italic', color: 'white', fontWeight: '400', marginBottom: '8px', lineHeight: '1.2' }}>{recipe.title}</h1>
+          <p style={{ fontSize: '14px', color: '#97C459', lineHeight: '1.7', marginBottom: '20px' }}>{recipe.description}</p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             {[
               { label: 'Prep', value: recipe.prep_time },
               { label: 'Cook', value: recipe.cook_time },
-              { label: 'Serves', value: recipe.servings },
+              { label: 'Serves', value: String(recipe.servings) },
               { label: 'Difficulty', value: recipe.difficulty },
             ].map((stat, i) => (
               <div key={i} style={{ background: '#3B6D11', borderRadius: '10px', padding: '10px 16px', border: '0.5px solid #639922' }}>
@@ -87,11 +61,8 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
       </div>
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '32px 24px' }}>
-
         <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-            Ingredients
-          </h2>
+          <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>Ingredients</h2>
           {recipe.ingredients?.map((ingredient: string, i: number) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '0.5px solid #EAF3DE' }}>
               <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#3B6D11', flexShrink: 0 }} />
@@ -101,27 +72,28 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
         </div>
 
         <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-            Method
-          </h2>
+          <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>Method</h2>
           {recipe.steps?.map((step: string, i: number) => (
             <div key={i} style={{ display: 'flex', gap: '16px', marginBottom: '18px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#3B6D11', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'white', fontWeight: '500', flexShrink: 0, marginTop: '1px' }}>
-                {i + 1}
-              </div>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#3B6D11', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'white', fontWeight: '500', flexShrink: 0, marginTop: '1px' }}>{i + 1}</div>
               <p style={{ fontSize: '14px', color: '#27500A', lineHeight: '1.7', margin: 0 }}>{step}</p>
             </div>
           ))}
         </div>
+
+        {recipe.notes && (
+          <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '13px', fontWeight: '500', color: '#27500A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>Notes</h2>
+            <p style={{ fontSize: '14px', color: '#27500A', lineHeight: '1.7', margin: 0 }}>{recipe.notes}</p>
+          </div>
+        )}
 
         {recipe.source_url && (
           <div style={{ background: '#EAF3DE', borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M1 11L11 1M7.5 1H11v3.5" stroke="#3B6D11" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <a href={recipe.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#3B6D11', textDecoration: 'none' }}>
-              View original recipe — {new URL(recipe.source_url).hostname.replace('www.', '')}
-            </a>
+            <a href={recipe.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#3B6D11', textDecoration: 'none' }}>View original recipe — {new URL(recipe.source_url).hostname.replace('www.', '')}</a>
           </div>
         )}
       </div>
