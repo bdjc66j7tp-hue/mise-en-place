@@ -1,16 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import FirecrawlApp from '@mendable/firecrawl-js'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
 })
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 const firecrawl = new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY!
@@ -18,7 +14,30 @@ const firecrawl = new FirecrawlApp({
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, url, user_email } = await request.json()
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          }
+        }
+      }
+    )
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'You must be signed in to import recipes' }, { status: 401 })
+    }
+
+    const { text, url } = await request.json()
 
     if (!text && !url) {
       return NextResponse.json({ error: 'Please provide a URL or recipe text' }, { status: 400 })
@@ -30,21 +49,16 @@ export async function POST(request: NextRequest) {
 
     if (url) {
       try {
-        console.log('Firecrawl fetching:', url)
         const scraped = await firecrawl.scrapeUrl(url)
         const pageContent = scraped?.data?.content || scraped?.data?.markdown || null
-        console.log('Page content found:', pageContent ? 'YES' : 'NO')
 
         if (pageContent) {
           recipeText = pageContent
-
-          // Try to get photo from scraped metadata
           if (scraped?.data?.metadata?.ogImage) {
             photo_url = scraped.data.metadata.ogImage
           } else if (scraped?.data?.metadata?.image) {
             photo_url = scraped.data.metadata.image
           }
-          console.log('Photo URL found:', photo_url ? 'YES' : 'NO')
         } else {
           return NextResponse.json({ error: 'Could not read that URL. Try pasting the recipe text instead.' }, { status: 400 })
         }
@@ -70,11 +84,7 @@ export async function POST(request: NextRequest) {
       throw new Error('Unexpected response type')
     }
 
-    const cleaned = content.text
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim()
-
+    const cleaned = content.text.replace(/```json/g, '').replace(/```/g, '').trim()
     const recipe = JSON.parse(cleaned)
 
     const { data, error } = await supabase
@@ -91,7 +101,8 @@ export async function POST(request: NextRequest) {
         tags: recipe.tags,
         source_url: source_url,
         photo_url: photo_url,
-        user_email: user_email || null,
+        user_id: user.id,
+        user_email: user.email,
       }])
       .select()
       .single()
@@ -105,9 +116,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Recipe import error:', error)
-    if (error instanceof Error) {
-      console.error('Error message:', error.message)
-    }
     return NextResponse.json({ error: 'Failed to import recipe. Please try again.' }, { status: 500 })
   }
 }

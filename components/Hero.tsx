@@ -1,22 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function Hero() {
   const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
-    const { error } = await supabase.from('waitlist').insert([{ email }])
-    if (!error) {
-      setSubmitted(true)
-      setEmail('')
-    }
-    setLoading(false)
+    if (!email) return
+    router.push(`/signin?email=${encodeURIComponent(email)}`)
   }
 
   return (
@@ -32,7 +26,7 @@ export default function Hero() {
           marginBottom: '22px', border: '0.5px solid #639922'
         }}>
           <span style={{ fontSize: '11px', color: '#C0DD97', fontWeight: '500' }}>
-            Now available on iOS & Android
+            Coming soon to iOS & Android
           </span>
         </div>
         <h1 style={{
@@ -54,66 +48,52 @@ export default function Hero() {
           The recipe app that imports from any website, teaches you culinary technique, and grows smarter with every cook who uses it.
         </p>
 
-        {submitted ? (
-          <div style={{
-            background: '#3B6D11', borderRadius: '12px', padding: '20px',
-            marginBottom: '20px', border: '0.5px solid #639922'
+        <form onSubmit={handleSubmit} style={{
+          display: 'flex', gap: '8px', maxWidth: '420px',
+          margin: '0 auto 20px auto', flexWrap: 'wrap', justifyContent: 'center'
+        }}>
+          <input
+            type="email"
+            required
+            placeholder="Your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              flex: '1', minWidth: '200px', padding: '13px 16px',
+              borderRadius: '12px', border: '0.5px solid #639922',
+              background: '#3B6D11', color: 'white', fontSize: '14px',
+              outline: 'none'
+            }}
+          />
+          <button type="submit" style={{
+            background: '#EAF3DE', color: '#27500A', border: 'none',
+            borderRadius: '12px', padding: '13px 24px', fontSize: '14px',
+            fontWeight: '500', cursor: 'pointer', whiteSpace: 'nowrap'
           }}>
-            <div style={{ fontSize: '16px', color: '#C0DD97', fontFamily: 'Georgia, serif', fontStyle: 'italic', marginBottom: '4px' }}>
-              You're on the list! 🌿
-            </div>
-            <div style={{ fontSize: '13px', color: '#97C459' }}>
-              We'll be in touch when Mise en Place is ready.
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={{
-            display: 'flex', gap: '8px', maxWidth: '420px',
-            margin: '0 auto 20px auto', flexWrap: 'wrap', justifyContent: 'center'
-          }}>
-            <input
-              type="email"
-              required
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                flex: '1', minWidth: '200px', padding: '13px 16px',
-                borderRadius: '12px', border: '0.5px solid #639922',
-                background: '#3B6D11', color: 'white', fontSize: '14px',
-                outline: 'none'
-              }}
-            />
-            <button type="submit" disabled={loading} style={{
-              background: '#EAF3DE', color: '#27500A', border: 'none',
-              borderRadius: '12px', padding: '13px 24px', fontSize: '14px',
-              fontWeight: '500', cursor: 'pointer', whiteSpace: 'nowrap'
-            }}>
-              {loading ? 'Joining...' : 'Join the waitlist'}
-            </button>
-          </form>
-        )}
+            Get cooking
+          </button>
+        </form>
 
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '12px' }}>
           <div style={{
             background: '#3B6D11', color: '#C0DD97', borderRadius: '8px',
-            padding: '7px 14px', fontSize: '11px', cursor: 'pointer',
+            padding: '7px 14px', fontSize: '11px', opacity: 0.6,
             display: 'flex', alignItems: 'center', gap: '6px',
             border: '0.5px solid #639922'
           }}>
-            App Store
+            App Store <span style={{ fontSize: '9px', opacity: 0.8 }}>· Soon</span>
           </div>
           <div style={{
             background: '#3B6D11', color: '#C0DD97', borderRadius: '8px',
-            padding: '7px 14px', fontSize: '11px', cursor: 'pointer',
+            padding: '7px 14px', fontSize: '11px', opacity: 0.6,
             display: 'flex', alignItems: 'center', gap: '6px',
             border: '0.5px solid #639922'
           }}>
-            Google Play
+            Google Play <span style={{ fontSize: '9px', opacity: 0.8 }}>· Soon</span>
           </div>
         </div>
         <p style={{ fontSize: '11px', color: '#639922', fontStyle: 'italic' }}>
-          Free to download · 5 recipe imports per day · Pro from $2.67/month
+          Free during beta · Pro from $2.67/month
         </p>
       </div>
     </section>

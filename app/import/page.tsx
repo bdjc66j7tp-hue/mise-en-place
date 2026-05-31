@@ -53,19 +53,6 @@ export default function ImportPage() {
     <div style={{ minHeight: '100vh', background: '#EAF3DE' }}>
 
       {/* Header */}
-      <div style={{ background: '#27500A', padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ width: '30px', height: '30px', background: '#3B6D11', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
-            <path d="M2 14C2 9 4 5 9 3.5C14 5 16 9 16 14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M5.5 14C5.5 11 6.8 9 9 8C11.2 9 12.5 11 12.5 14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-            <line x1="2" y1="14" x2="16" y2="14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-            <circle cx="9" cy="11" r="1.3" fill="white"/>
-          </svg>
-        </div>
-        <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'italic', color: '#C0DD97' }}>
-          Mise en Place · Import a recipe
-        </div>
-      </div>
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '40px 24px' }}>
 
