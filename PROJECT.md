@@ -170,6 +170,17 @@ UNSPLASH_ACCESS_KEY=<set in Vercel project env vars — see Unsplash developer d
 - **Action item for Steve:** since those keys sat in a git-tracked file (even though the push itself was blocked, they were committed locally and briefly present in a rejected push), consider rotating the Anthropic, Firecrawl, and Unsplash keys from their respective dashboards as a precaution. The Supabase anon key is public-safe by design and doesn't need rotation.
 - Everything from this session is now live on `main` → deployed via Vercel's GitHub integration. Added `.DS_Store` to `.gitignore` and stopped tracking the ones already committed, while at it.
 
+### ✅ Mobile overflow fixes (post-launch, first real device testing)
+- The homepage's `whiteSpace: 'nowrap'` heading in `Features.tsx` and the import page's tab buttons could overflow on narrow phones, which triggers iOS Safari/Chrome (same WebKit engine) to shrink-to-fit the *entire page* — the visible symptom was every full-bleed section background stopping partway across the screen with a blank gutter on the right. Fixed both.
+- `BrandLockup.tsx` had a deeper version of the same problem: the logo-beside-text layout needs ~480px at scale 1 (logo + gap + the widest tagline line), which doesn't fit on a phone regardless of how small the title font alone gets. It now detects viewport width and computes an `effectiveScale` that shrinks the *whole unit* (logo, title, divider, tagline together) proportionally on narrow screens, preserving the calibrated alignment at any size — landscape and desktop are unaffected since the cap only kicks in below the natural-fit width.
+- Confirmed on Steve's iPhone across both orientations after the fix.
+
+### ✅ FAQ page
+- **Page:** `app/faq/page.tsx` — static list of Q&As, styled like the Techniques page header band (olive banner + cream content)
+- Linked from Footer under "Get started"
+- Covers: what the app does, TikTok/Instagram import limitations (and the paste-text workaround), how to import, pricing during beta, serving scaling, techniques, profile privacy, native app timeline, and a feedback/bug-report email (steveellis67@gmail.com)
+- Written ahead of Steve sending the beta out to testers, specifically to head off the TikTok/Instagram import question
+
 ---
 
 ## Key File Map
