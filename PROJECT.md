@@ -181,6 +181,12 @@ UNSPLASH_ACCESS_KEY=<set in Vercel project env vars — see Unsplash developer d
 - Covers: what the app does, TikTok/Instagram import limitations (and the paste-text workaround), how to import, pricing during beta, serving scaling, techniques, profile privacy, native app timeline, and a feedback/bug-report email (miseenplacerecipessupport@gmail.com — a dedicated support inbox, not Steve's personal address)
 - Written ahead of Steve sending the beta out to testers, specifically to head off the TikTok/Instagram import question
 
+### ✅ Fixed noisy dev-only console error (Supabase cookie writes)
+- Local `npm run dev` was throwing a red "Cookies can only be modified in a Server Action or Route Handler" console error on `/recipes`, `/recipes/[id]`, `/cook/[id]`, and `/community` — never visible to actual users, dev-only, but worth silencing since it looked alarming.
+- Cause: the Supabase SSR helper's `setAll` callback always tries to write cookies, but plain Server Components (regular pages) aren't allowed to — only Server Actions/Route Handlers are.
+- Fixed by wrapping the cookie write in a `try/catch` in all four affected `page.tsx` files, matching Supabase's own documented pattern for this exact situation.
+- **Known gap, not urgent:** there's no `middleware.ts` refreshing the Supabase session on every request (the more complete version of this pattern). Auth is tested and working fine as-is — but if testers ever report getting logged out unexpectedly after a while, this is the first thing to add.
+
 ---
 
 ## Key File Map
