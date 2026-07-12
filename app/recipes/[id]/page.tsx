@@ -47,11 +47,33 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
   const isOwner = user?.id === recipe.user_id
   const spotifyEmbedUrl = getSpotifyEmbedUrl(recipe.spotify_url)
 
+  // Fetch the recipe author's profile for display
+  const { data: authorProfile } = await supabase
+    .from('profiles')
+    .select('display_name, profile_photo_url')
+    .eq('id', recipe.user_id)
+    .single()
+
+  // Has the current user already hearted this recipe?
+  let initialFavorited = false
+  if (user) {
+    const { data: favorite } = await supabase
+      .from('favorites')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('recipe_id', id)
+      .maybeSingle()
+    initialFavorited = !!favorite
+  }
+
   return (
     <RecipeScaler
       recipe={recipe}
       isOwner={isOwner}
       spotifyEmbedUrl={spotifyEmbedUrl}
+      userId={user?.id ?? null}
+      authorProfile={authorProfile ?? null}
+      initialFavorited={initialFavorited}
     />
   )
 }

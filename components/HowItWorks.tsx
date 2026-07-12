@@ -10,8 +10,8 @@ export default function HowItWorks() {
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
           {[
-            { num: '1', title: 'Find a recipe anywhere', desc: 'A food blog, TikTok, Instagram, a foreign language website, your grandmother\'s handwritten card. Anywhere at all.' },
-            { num: '2', title: 'Paste, share or scan', desc: 'Drop the URL in, share from your browser, or photograph it. AI handles translation, conversion and dietary tagging automatically.' },
+            { num: '1', title: 'Find a recipe anywhere', desc: 'A food blog, your grandmother\'s handwritten card, a cookbook page. Anywhere at all.' },
+            { num: '2', title: 'Paste, type or scan', desc: 'Drop the link in, paste the text, or photograph the card. AI reads it and cleans it into a proper recipe automatically.' },
             { num: '3', title: 'Clean recipe card, instantly', desc: 'Your language. Your measurements. Source always credited. Ready to cook from immediately.' },
             { num: '4', title: 'It joins the community library', desc: 'Every recipe you import enriches the shared library. Other cooks discover it. The whole platform improves with every scan.' },
           ].map((step, i) => (

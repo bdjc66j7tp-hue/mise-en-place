@@ -56,19 +56,19 @@ function SignInForm() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#EAF3DE', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ background: 'white', borderRadius: '14px', padding: '32px', border: '0.5px solid #C0DD97', maxWidth: '420px', width: '100%' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '26px', fontStyle: 'italic', color: '#27500A', fontWeight: '400', marginBottom: '8px', textAlign: 'center' }}>
+    <div style={{ minHeight: '100vh', background: '#F3EDE4', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ background: 'white', borderRadius: '14px', padding: '32px', border: '0.5px solid #E4DACB', maxWidth: '420px', width: '100%' }}>
+        <h1 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '26px', color: '#21201D', fontWeight: '400', marginBottom: '8px', textAlign: 'center' }}>
           Welcome to Mise en Place
         </h1>
-        <p style={{ fontSize: '13px', color: '#639922', textAlign: 'center', marginBottom: '24px', lineHeight: '1.5' }}>
+        <p style={{ fontSize: '13px', color: '#7A7468', textAlign: 'center', marginBottom: '24px', lineHeight: '1.5' }}>
           Sign in to start saving recipes. No password needed.
         </p>
 
         {sent ? (
-          <div style={{ background: '#EAF3DE', borderRadius: '10px', padding: '20px', textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'italic', color: '#3B6D11', marginBottom: '6px' }}>Check your email</div>
-            <div style={{ fontSize: '12px', color: '#639922', lineHeight: '1.5' }}>We sent a sign-in link to <strong>{email}</strong>. Click it to sign in.</div>
+          <div style={{ background: '#F3EDE4', borderRadius: '10px', padding: '20px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '16px', color: '#21201D', marginBottom: '6px' }}>Check your email</div>
+            <div style={{ fontSize: '12px', color: '#7A7468', lineHeight: '1.5' }}>We sent a sign-in link to <strong>{email}</strong>. Click it to sign in.</div>
           </div>
         ) : (
           <>
@@ -78,8 +78,8 @@ function SignInForm() {
               onClick={handleGoogleSignIn}
               disabled={googleLoading || sending}
               style={{
-                width: '100%', background: 'white', color: '#27500A',
-                border: '1px solid #C0DD97', borderRadius: '8px',
+                width: '100%', background: 'white', color: '#21201D',
+                border: '1px solid #E4DACB', borderRadius: '8px',
                 padding: '12px', fontSize: '14px', fontWeight: '500',
                 cursor: googleLoading ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -97,9 +97,9 @@ function SignInForm() {
 
             {/* Divider */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <div style={{ flex: 1, height: '1px', background: '#C0DD97' }} />
-              <span style={{ fontSize: '11px', color: '#639922' }}>or</span>
-              <div style={{ flex: 1, height: '1px', background: '#C0DD97' }} />
+              <div style={{ flex: 1, height: '1px', background: '#E4DACB' }} />
+              <span style={{ fontSize: '11px', color: '#7A7468' }}>or</span>
+              <div style={{ flex: 1, height: '1px', background: '#E4DACB' }} />
             </div>
 
             {/* Magic link form */}
@@ -111,12 +111,12 @@ function SignInForm() {
                 placeholder="you@example.com"
                 required
                 disabled={sending || googleLoading}
-                style={{ width: '100%', padding: '12px 14px', fontSize: '14px', border: '0.5px solid #C0DD97', borderRadius: '8px', marginBottom: '12px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '12px 14px', fontSize: '14px', border: '0.5px solid #E4DACB', borderRadius: '8px', marginBottom: '12px', boxSizing: 'border-box', fontFamily: 'inherit' }}
               />
               <button
                 type="submit"
                 disabled={sending || googleLoading || !email}
-                style={{ width: '100%', background: '#3B6D11', color: 'white', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: sending ? 'wait' : 'pointer' }}
+                style={{ width: '100%', background: '#5C6B47', color: '#F3EDE4', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: sending ? 'wait' : 'pointer' }}
               >
                 {sending ? 'Sending...' : 'Send sign-in link'}
               </button>
@@ -132,7 +132,7 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#EAF3DE' }} />}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#F3EDE4' }} />}>
       <SignInForm />
     </Suspense>
   )

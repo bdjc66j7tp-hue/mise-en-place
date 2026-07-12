@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import ProfileTabs from '@/components/ProfileTabs'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,15 +38,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
   if (profile.is_public === false && !isOwnProfile) {
     return (
-      <div style={{ minHeight: '100vh', background: '#EAF3DE', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ background: 'white', borderRadius: '14px', padding: '32px', border: '0.5px solid #C0DD97', maxWidth: '420px', width: '100%', textAlign: 'center' }}>
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" strokeWidth="1.5" style={{ margin: '0 auto 12px', display: 'block' }}>
+      <div style={{ minHeight: '100vh', background: '#F3EDE4', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div style={{ background: 'white', borderRadius: '14px', padding: '32px', border: '0.5px solid #E4DACB', maxWidth: '420px', width: '100%', textAlign: 'center' }}>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#5C6B47" strokeWidth="1.5" style={{ margin: '0 auto 12px', display: 'block' }}>
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: '20px', fontStyle: 'italic', color: '#3B6D11', marginBottom: '8px' }}>This profile is private</div>
-          <div style={{ fontSize: '13px', color: '#639922', lineHeight: '1.5' }}>The cook keeps this one to themselves.</div>
-          <Link href="/recipes" style={{ display: 'inline-block', marginTop: '20px', fontSize: '13px', color: '#3B6D11', textDecoration: 'none', borderBottom: '1px solid #C0DD97', paddingBottom: '2px' }}>
+          <div style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '20px', color: '#21201D', marginBottom: '8px' }}>This profile is private</div>
+          <div style={{ fontSize: '13px', color: '#7A7468', lineHeight: '1.5' }}>The cook keeps this one to themselves.</div>
+          <Link href="/recipes" style={{ display: 'inline-block', marginTop: '20px', fontSize: '13px', color: '#5C6B47', textDecoration: 'none', borderBottom: '1px solid #E4DACB', paddingBottom: '2px' }}>
             ← Back to recipes
           </Link>
         </div>
@@ -60,6 +61,25 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
     .neq('visibility', isOwnProfile ? '__never__' : 'draft')
     .order('created_at', { ascending: false })
 
+  // Recipes this profile has hearted/saved from other cooks — only surfaced
+  // on your own profile (favorites are treated as personal, like a reading list).
+  type SavedRecipe = { id: string; title: string; photo_url: string | null; visibility?: string }
+  let savedRecipes: SavedRecipe[] | null = null
+  if (isOwnProfile) {
+    const { data: favorites } = await supabase
+      .from('favorites')
+      .select('recipe_id, recipes(id, title, photo_url, visibility)')
+      .eq('user_id', id)
+      .order('created_at', { ascending: false })
+
+    savedRecipes = (favorites ?? [])
+      .map((f): SavedRecipe | null => {
+        const r = Array.isArray(f.recipes) ? f.recipes[0] : f.recipes
+        return r ? { id: r.id, title: r.title, photo_url: r.photo_url, visibility: r.visibility } : null
+      })
+      .filter((r): r is SavedRecipe => r !== null)
+  }
+
   const socials = [
     profile.instagram_username && { name: 'Instagram', href: `https://instagram.com/${profile.instagram_username}`, icon: 'instagram' },
     profile.tiktok_username && { name: 'TikTok', href: `https://tiktok.com/@${profile.tiktok_username}`, icon: 'tiktok' },
@@ -68,9 +88,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
   ].filter(Boolean) as { name: string; href: string; icon: string }[]
 
   return (
-    <div style={{ minHeight: '100vh', background: '#EAF3DE' }}>
+    <div style={{ minHeight: '100vh', background: '#F3EDE4' }}>
 
-      <div style={{ width: '100%', aspectRatio: '5 / 2', maxHeight: '240px', background: '#3B6D11', borderBottom: '0.5px solid #639922', overflow: 'hidden' }}>
+      <div style={{ width: '100%', aspectRatio: '5 / 2', maxHeight: '240px', background: '#5C6B47', borderBottom: '0.5px solid #4A5639', overflow: 'hidden' }}>
         {profile.banner_photo_url && (
           <img src={profile.banner_photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         )}
@@ -79,33 +99,33 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px' }}>
 
         <div style={{ marginTop: '-60px', marginBottom: '24px', display: 'flex', alignItems: 'flex-end', gap: '20px', flexWrap: 'wrap' }}>
-          <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#27500A', border: '4px solid #EAF3DE', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#21201D', border: '4px solid #F3EDE4', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {profile.profile_photo_url ? (
               <img src={profile.profile_photo_url} alt={profile.display_name || 'Profile'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontStyle: 'italic', color: '#97C459' }}>
+              <div style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '40px', color: '#C99A3D' }}>
                 {(profile.display_name || '?').charAt(0).toUpperCase()}
               </div>
             )}
           </div>
-          <div style={{ paddingBottom: '12px', flex: 1, minWidth: '200px' }}>
+          <div style={{ paddingBottom: '12px', flex: 1, minWidth: '200px', alignSelf: 'flex-start', marginTop: '80px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '28px', fontStyle: 'italic', color: '#27500A', fontWeight: '400', margin: 0 }}>
+              <h1 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '28px', color: '#21201D', fontWeight: '400', margin: 0 }}>
                 {profile.display_name || 'Cook'}
               </h1>
               {isOwnProfile && profile.is_public === false && (
-                <span style={{ fontSize: '10px', color: '#639922', background: '#EAF3DE', padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.06em', border: '0.5px solid #C0DD97' }}>
+                <span style={{ fontSize: '10px', color: '#7A7468', background: '#F3EDE4', padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.06em', border: '0.5px solid #E4DACB' }}>
                   Private
                 </span>
               )}
             </div>
-            <p style={{ fontSize: '13px', color: '#639922', marginTop: '4px' }}>
+            <p style={{ fontSize: '13px', color: '#7A7468', marginTop: '4px' }}>
               {recipes?.length ?? 0} recipe{recipes?.length === 1 ? '' : 's'}
             </p>
           </div>
           {isOwnProfile && (
             <Link href={`/cook/${id}/edit`} style={{ textDecoration: 'none', paddingBottom: '12px' }}>
-              <div style={{ background: '#3B6D11', color: 'white', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '500' }}>
+              <div style={{ background: '#5C6B47', color: '#F3EDE4', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '500' }}>
                 Edit profile
               </div>
             </Link>
@@ -113,15 +133,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
         </div>
 
         {profile.bio && (
-          <div style={{ background: 'white', borderRadius: '14px', padding: '20px 24px', border: '0.5px solid #C0DD97', marginBottom: socials.length > 0 ? '12px' : '24px' }}>
-            <p style={{ fontSize: '14px', color: '#27500A', lineHeight: '1.6', margin: 0 }}>{profile.bio}</p>
+          <div style={{ background: 'white', borderRadius: '14px', padding: '20px 24px', border: '0.5px solid #E4DACB', marginBottom: socials.length > 0 ? '12px' : '24px' }}>
+            <p style={{ fontSize: '14px', color: '#21201D', lineHeight: '1.6', margin: 0 }}>{profile.bio}</p>
           </div>
         )}
 
         {socials.length > 0 && (
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
             {socials.map((s) => (
-              <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" title={s.name} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', background: 'white', borderRadius: '10px', border: '0.5px solid #C0DD97', color: '#3B6D11', textDecoration: 'none' }}>
+              <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" title={s.name} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', background: 'white', borderRadius: '10px', border: '0.5px solid #E4DACB', color: '#5C6B47', textDecoration: 'none' }}>
                 {s.icon === 'instagram' && (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -151,51 +171,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
-        <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '22px', fontStyle: 'italic', color: '#27500A', fontWeight: '400', marginBottom: '16px', marginTop: '32px' }}>
+        <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '22px', color: '#21201D', fontWeight: '400', marginBottom: '16px', marginTop: '32px' }}>
           Recipes
         </h2>
 
-        {(!recipes || recipes.length === 0) ? (
-          <div style={{ background: 'white', borderRadius: '14px', padding: '40px 24px', border: '0.5px solid #C0DD97', textAlign: 'center', marginBottom: '40px' }}>
-            <div style={{ fontFamily: 'Georgia, serif', fontSize: '17px', fontStyle: 'italic', color: '#3B6D11', marginBottom: '6px' }}>No recipes yet</div>
-            <div style={{ fontSize: '12px', color: '#639922' }}>{isOwnProfile ? 'Import your first recipe to get started.' : 'This cook hasn\'t added any recipes.'}</div>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-            {recipes.map((recipe) => {
-              const hasUserPhoto = recipe.photo_url && recipe.photo_url.includes('supabase')
-              return (
-                <Link key={recipe.id} href={`/recipes/${recipe.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ background: 'white', borderRadius: '14px', overflow: 'hidden', border: '0.5px solid #C0DD97', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ width: '100%', height: '160px', background: '#3B6D11', overflow: 'hidden' }}>
-                      {hasUserPhoto ? (
-                        <img src={recipe.photo_url} alt={recipe.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg viewBox="0 0 24 24" fill="none" width="36" height="36">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#97C459" strokeWidth="1.5"/>
-                            <circle cx="8" cy="10" r="2" stroke="#97C459" strokeWidth="1.5"/>
-                            <path d="M3 16l5-4 4 3 3-4 6 5" stroke="#97C459" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ padding: '14px 16px 16px', flex: 1 }}>
-                      {isOwnProfile && recipe.visibility !== 'public' && (
-                        <div style={{ marginBottom: '8px' }}>
-                          <span style={{ display: 'inline-block', fontSize: '9px', padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.06em', background: recipe.visibility === 'draft' ? '#E8DAB2' : '#D4C4A0', color: '#27500A', border: '0.5px solid #C0DD97' }}>
-                            {recipe.visibility === 'draft' ? 'Draft' : 'Private'}
-                          </span>
-                        </div>
-                      )}
-                      <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '17px', fontStyle: 'italic', color: '#27500A', fontWeight: '400', marginBottom: '4px', lineHeight: '1.3' }}>{recipe.title}</h3>
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-        )}
+        <ProfileTabs
+          addedRecipes={recipes ?? []}
+          savedRecipes={savedRecipes}
+          isOwnProfile={isOwnProfile}
+        />
       </div>
     </div>
   )

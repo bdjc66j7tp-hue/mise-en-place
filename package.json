@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "backfill:nutrition": "node scripts/backfill-nutrition.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

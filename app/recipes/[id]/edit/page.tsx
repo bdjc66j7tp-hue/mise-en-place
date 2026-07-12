@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
+import TechniqueGallery from '@/components/TechniqueGallery'
+import { suggestTechniqueIds } from '@/lib/techniques'
 
 export default function EditRecipePage() {
   const params = useParams()
@@ -11,6 +13,8 @@ export default function EditRecipePage() {
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [error, setError] = useState('')
   const [authorized, setAuthorized] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -29,6 +33,8 @@ export default function EditRecipePage() {
   const [visibility, setVisibility] = useState<'public' | 'private' | 'draft'>('public')
   const [spotifyUrl, setSpotifyUrl] = useState('')
   const [isFeatured, setIsFeatured] = useState(false)
+  const [techniqueIds, setTechniqueIds] = useState<string[]>([])
+  const [suggestedTechniqueIds, setSuggestedTechniqueIds] = useState<string[]>([])
 
   useEffect(() => {
     const supabase = createClient()
@@ -81,6 +87,15 @@ export default function EditRecipePage() {
       setSpotifyUrl(recipe.spotify_url ?? '')
       setVisibility(recipe.visibility ?? 'public')
       setIsFeatured(recipe.is_featured ?? false)
+      setTechniqueIds(recipe.technique_ids ?? [])
+
+      const methodText = [
+        recipe.title ?? '',
+        ...(recipe.ingredients ?? []),
+        ...(recipe.steps ?? []),
+      ].join('\n')
+      setSuggestedTechniqueIds(suggestTechniqueIds(methodText))
+
       setAuthorized(true)
       setLoading(false)
     }
@@ -95,7 +110,6 @@ export default function EditRecipePage() {
 
     const supabase = createClient()
 
-    // Build the update object. Only admins can change is_featured.
     const updatePayload: Record<string, unknown> = {
       title: title.trim(),
       description: description.trim() || null,
@@ -110,6 +124,7 @@ export default function EditRecipePage() {
       source_url: sourceUrl.trim() || null,
       spotify_url: spotifyUrl.trim() || null,
       visibility,
+      technique_ids: techniqueIds,
     }
     if (isAdmin) {
       updatePayload.is_featured = isFeatured
@@ -130,34 +145,56 @@ export default function EditRecipePage() {
     router.refresh()
   }
 
+  async function handleDelete() {
+    setDeleting(true)
+    setError('')
+
+    const supabase = createClient()
+
+    const { error: deleteError } = await supabase
+      .from('recipes')
+      .delete()
+      .eq('id', id)
+
+    if (deleteError) {
+      setError(deleteError.message)
+      setDeleting(false)
+      setConfirmingDelete(false)
+      return
+    }
+
+    router.push('/recipes')
+    router.refresh()
+  }
+
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#EAF3DE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontFamily: 'Georgia, serif', fontSize: '17px', fontStyle: 'italic', color: '#3B6D11' }}>Loading...</div>
+      <div style={{ minHeight: '100vh', background: '#F3EDE4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '17px', color: '#21201D' }}>Loading...</div>
       </div>
     )
   }
 
   if (!authorized) {
     return (
-      <div style={{ minHeight: '100vh', background: '#EAF3DE', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ background: 'white', borderRadius: '14px', padding: '32px', border: '0.5px solid #C0DD97', maxWidth: '420px', width: '100%', textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontStyle: 'italic', color: '#3B6D11', marginBottom: '8px' }}>Not allowed</div>
-          <div style={{ fontSize: '13px', color: '#639922' }}>{error}</div>
+      <div style={{ minHeight: '100vh', background: '#F3EDE4', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div style={{ background: 'white', borderRadius: '14px', padding: '32px', border: '0.5px solid #E4DACB', maxWidth: '420px', width: '100%', textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', color: '#21201D', marginBottom: '8px' }}>Not allowed</div>
+          <div style={{ fontSize: '13px', color: '#7A7468' }}>{error}</div>
         </div>
       </div>
     )
   }
 
-  const inputStyle = { width: '100%', padding: '10px 12px', fontSize: '14px', border: '0.5px solid #C0DD97', borderRadius: '8px', boxSizing: 'border-box' as const, fontFamily: 'inherit', color: '#27500A' }
-  const labelStyle = { display: 'block', fontSize: '11px', color: '#27500A', textTransform: 'uppercase' as const, letterSpacing: '0.08em', fontWeight: '500', marginBottom: '8px' }
-  const cardStyle = { background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #C0DD97', marginBottom: '16px' }
+  const inputStyle = { width: '100%', padding: '10px 12px', fontSize: '14px', border: '0.5px solid #E4DACB', borderRadius: '8px', boxSizing: 'border-box' as const, fontFamily: 'inherit', color: '#21201D' }
+  const labelStyle = { display: 'block', fontSize: '11px', color: '#21201D', textTransform: 'uppercase' as const, letterSpacing: '0.08em', fontWeight: '500', marginBottom: '8px' }
+  const cardStyle = { background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #E4DACB', marginBottom: '16px' }
   const radioRowStyle: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', borderRadius: '10px', cursor: 'pointer' }
   return (
-    <div style={{ minHeight: '100vh', background: '#EAF3DE', padding: '40px 20px' }}>
+    <div style={{ minHeight: '100vh', background: '#F3EDE4', padding: '40px 20px' }}>
       <div style={{ maxWidth: '680px', margin: '0 auto' }}>
 
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '28px', fontStyle: 'italic', color: '#27500A', fontWeight: '400', marginBottom: '24px' }}>
+        <h1 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '28px', color: '#21201D', fontWeight: '400', marginBottom: '24px' }}>
           Edit recipe
         </h1>
 
@@ -166,27 +203,27 @@ export default function EditRecipePage() {
           <div style={cardStyle}>
             <label style={labelStyle}>Visibility</label>
 
-            <label style={{ ...radioRowStyle, background: visibility === 'public' ? '#EAF3DE' : 'transparent' }}>
-              <input type="radio" name="visibility" checked={visibility === 'public'} onChange={() => setVisibility('public')} style={{ marginTop: '3px', accentColor: '#3B6D11' }} />
+            <label style={{ ...radioRowStyle, background: visibility === 'public' ? '#F3EDE4' : 'transparent' }}>
+              <input type="radio" name="visibility" checked={visibility === 'public'} onChange={() => setVisibility('public')} style={{ marginTop: '3px', accentColor: '#5C6B47' }} />
               <div>
-                <div style={{ fontSize: '14px', color: '#27500A', fontWeight: '500' }}>Public</div>
-                <div style={{ fontSize: '12px', color: '#639922', marginTop: '2px', lineHeight: '1.4' }}>Shows in the public gallery and on your profile.</div>
+                <div style={{ fontSize: '14px', color: '#21201D', fontWeight: '500' }}>Public</div>
+                <div style={{ fontSize: '12px', color: '#7A7468', marginTop: '2px', lineHeight: '1.4' }}>Shows in the public gallery and on your profile.</div>
               </div>
             </label>
 
-            <label style={{ ...radioRowStyle, background: visibility === 'private' ? '#EAF3DE' : 'transparent', marginTop: '4px' }}>
-              <input type="radio" name="visibility" checked={visibility === 'private'} onChange={() => setVisibility('private')} style={{ marginTop: '3px', accentColor: '#3B6D11' }} />
+            <label style={{ ...radioRowStyle, background: visibility === 'private' ? '#F3EDE4' : 'transparent', marginTop: '4px' }}>
+              <input type="radio" name="visibility" checked={visibility === 'private'} onChange={() => setVisibility('private')} style={{ marginTop: '3px', accentColor: '#5C6B47' }} />
               <div>
-                <div style={{ fontSize: '14px', color: '#27500A', fontWeight: '500' }}>Private</div>
-                <div style={{ fontSize: '12px', color: '#639922', marginTop: '2px', lineHeight: '1.4' }}>Only on your profile. Doesn&apos;t appear in the public gallery.</div>
+                <div style={{ fontSize: '14px', color: '#21201D', fontWeight: '500' }}>Private</div>
+                <div style={{ fontSize: '12px', color: '#7A7468', marginTop: '2px', lineHeight: '1.4' }}>Only on your profile. Doesn&apos;t appear in the public gallery.</div>
               </div>
             </label>
 
-            <label style={{ ...radioRowStyle, background: visibility === 'draft' ? '#EAF3DE' : 'transparent', marginTop: '4px' }}>
-              <input type="radio" name="visibility" checked={visibility === 'draft'} onChange={() => setVisibility('draft')} style={{ marginTop: '3px', accentColor: '#3B6D11' }} />
+            <label style={{ ...radioRowStyle, background: visibility === 'draft' ? '#F3EDE4' : 'transparent', marginTop: '4px' }}>
+              <input type="radio" name="visibility" checked={visibility === 'draft'} onChange={() => setVisibility('draft')} style={{ marginTop: '3px', accentColor: '#5C6B47' }} />
               <div>
-                <div style={{ fontSize: '14px', color: '#27500A', fontWeight: '500' }}>Draft</div>
-                <div style={{ fontSize: '12px', color: '#639922', marginTop: '2px', lineHeight: '1.4' }}>Only you can see it. Perfect for grandma&apos;s recipe card or a work in progress.</div>
+                <div style={{ fontSize: '14px', color: '#21201D', fontWeight: '500' }}>Draft</div>
+                <div style={{ fontSize: '12px', color: '#7A7468', marginTop: '2px', lineHeight: '1.4' }}>Only you can see it. Perfect for grandma&apos;s recipe card or a work in progress.</div>
               </div>
             </label>
           </div>
@@ -198,11 +235,11 @@ export default function EditRecipePage() {
                   type="checkbox"
                   checked={isFeatured}
                   onChange={(e) => setIsFeatured(e.target.checked)}
-                  style={{ marginTop: '3px', accentColor: '#3B6D11', width: '16px', height: '16px' }}
+                  style={{ marginTop: '3px', accentColor: '#5C6B47', width: '16px', height: '16px' }}
                 />
                 <div>
-                  <div style={{ fontSize: '14px', color: '#27500A', fontWeight: '500' }}>Feature on homepage <span style={{ fontSize: '10px', color: '#639922', fontWeight: '400', marginLeft: '6px' }}>Admin only</span></div>
-                  <div style={{ fontSize: '12px', color: '#639922', marginTop: '2px', lineHeight: '1.4' }}>
+                  <div style={{ fontSize: '14px', color: '#21201D', fontWeight: '500' }}>Feature on homepage <span style={{ fontSize: '10px', color: '#7A7468', fontWeight: '400', marginLeft: '6px' }}>Admin only</span></div>
+                  <div style={{ fontSize: '12px', color: '#7A7468', marginTop: '2px', lineHeight: '1.4' }}>
                     Mark this recipe as showcase-worthy. Featured public recipes can be surfaced on the homepage.
                   </div>
                 </div>
@@ -243,19 +280,19 @@ export default function EditRecipePage() {
 
           <div style={cardStyle}>
             <label style={labelStyle}>Ingredients</label>
-            <p style={{ fontSize: '12px', color: '#639922', marginTop: 0, marginBottom: '10px' }}>One per line.</p>
+            <p style={{ fontSize: '12px', color: '#7A7468', marginTop: 0, marginBottom: '10px' }}>One per line.</p>
             <textarea value={ingredientsText} onChange={(e) => setIngredientsText(e.target.value)} rows={Math.max(6, ingredientsText.split('\n').length + 1)} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
           </div>
 
           <div style={cardStyle}>
             <label style={labelStyle}>Steps</label>
-            <p style={{ fontSize: '12px', color: '#639922', marginTop: 0, marginBottom: '10px' }}>One step per line. Add as many as you need.</p>
+            <p style={{ fontSize: '12px', color: '#7A7468', marginTop: 0, marginBottom: '10px' }}>One step per line. Add as many as you need.</p>
             <textarea value={stepsText} onChange={(e) => setStepsText(e.target.value)} rows={Math.max(6, stepsText.split('\n').length + 1)} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit', lineHeight: '1.6' }} />
           </div>
 
           <div style={cardStyle}>
             <label style={labelStyle}>Tags</label>
-            <p style={{ fontSize: '12px', color: '#639922', marginTop: 0, marginBottom: '10px' }}>Separate with commas.</p>
+            <p style={{ fontSize: '12px', color: '#7A7468', marginTop: 0, marginBottom: '10px' }}>Separate with commas.</p>
             <input type="text" value={tagsText} onChange={(e) => setTagsText(e.target.value)} placeholder="dinner, italian, quick" style={inputStyle} />
           </div>
 
@@ -271,7 +308,7 @@ export default function EditRecipePage() {
 
           <div style={cardStyle}>
             <label style={labelStyle}>Song for this recipe</label>
-            <p style={{ fontSize: '12px', color: '#639922', marginTop: 0, marginBottom: '10px' }}>
+            <p style={{ fontSize: '12px', color: '#7A7468', marginTop: 0, marginBottom: '10px' }}>
               Paste a Spotify link. The song plays right on the recipe page.
             </p>
             <input
@@ -283,8 +320,21 @@ export default function EditRecipePage() {
             />
           </div>
 
+          <div style={cardStyle}>
+            <label style={labelStyle}>Culinary techniques</label>
+            <p style={{ fontSize: '12px', color: '#7A7468', marginTop: 0, marginBottom: '10px' }}>
+              Tag the techniques used in this recipe. Cooks viewing the finished recipe can tap one to see what it means.
+            </p>
+            <TechniqueGallery
+              selectable
+              selectedIds={techniqueIds}
+              suggestedIds={suggestedTechniqueIds}
+              onSelectionChange={setTechniqueIds}
+            />
+          </div>
+
           {error && (
-            <div style={{ background: 'white', borderRadius: '10px', padding: '12px 16px', border: '0.5px solid #C0DD97', marginBottom: '16px', fontSize: '13px', color: '#B33' }}>
+            <div style={{ background: 'white', borderRadius: '10px', padding: '12px 16px', border: '0.5px solid #E4DACB', marginBottom: '16px', fontSize: '13px', color: '#B33' }}>
               {error}
             </div>
           )}
@@ -292,22 +342,68 @@ export default function EditRecipePage() {
           <div style={{ display: 'flex', gap: '12px' }}>
             <button
               type="submit"
-              disabled={saving}
-              style={{ flex: 1, background: '#3B6D11', color: 'white', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: saving ? 'wait' : 'pointer' }}
+              disabled={saving || deleting}
+              style={{ flex: 1, background: '#5C6B47', color: '#F3EDE4', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: saving ? 'wait' : 'pointer' }}
             >
               {saving ? 'Saving...' : 'Save changes'}
             </button>
             <button
               type="button"
               onClick={() => router.push(`/recipes/${id}`)}
-              disabled={saving}
-              style={{ flex: 1, background: 'white', color: '#3B6D11', border: '0.5px solid #C0DD97', borderRadius: '8px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: saving ? 'wait' : 'pointer' }}
+              disabled={saving || deleting}
+              style={{ flex: 1, background: 'white', color: '#5C6B47', border: '0.5px solid #E4DACB', borderRadius: '8px', padding: '12px', fontSize: '14px', fontWeight: '500', cursor: saving ? 'wait' : 'pointer' }}
             >
               Cancel
             </button>
           </div>
 
         </form>
+
+        <div style={{ background: 'white', borderRadius: '14px', padding: '24px', border: '0.5px solid #E8C4C4', marginTop: '32px' }}>
+          <div style={{ fontSize: '11px', color: '#A04040', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500, marginBottom: '8px' }}>
+            Danger zone
+          </div>
+          <div style={{ fontSize: '14px', color: '#21201D', marginBottom: '4px', fontWeight: 500 }}>Delete this recipe</div>
+          <div style={{ fontSize: '12px', color: '#7A7468', lineHeight: '1.5', marginBottom: '16px' }}>
+            Permanently removes the recipe and its photo. This can&apos;t be undone.
+          </div>
+
+          {!confirmingDelete ? (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              disabled={saving || deleting}
+              style={{ background: 'white', color: '#A04040', border: '0.5px solid #E8C4C4', borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}
+            >
+              Delete recipe
+            </button>
+          ) : (
+            <div>
+              <div style={{ fontSize: '13px', color: '#A04040', marginBottom: '12px', fontWeight: 500 }}>
+                Are you sure? This will delete &ldquo;{title}&rdquo; forever.
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  style={{ background: '#A04040', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: 500, cursor: deleting ? 'wait' : 'pointer' }}
+                >
+                  {deleting ? 'Deleting...' : 'Yes, delete it'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(false)}
+                  disabled={deleting}
+                  style={{ background: 'white', color: '#21201D', border: '0.5px solid #E4DACB', borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: 500, cursor: deleting ? 'wait' : 'pointer' }}
+                >
+                  Keep it
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   )
