@@ -71,7 +71,7 @@ export default function Features() {
         <p style={{ fontSize: '11px', color: '#B85C38', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '500', textAlign: 'center', marginBottom: '8px' }}>
           What Mise en Place does
         </p>
-        <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '22px', color: '#21201D', textAlign: 'center', fontWeight: '400', marginBottom: '6px', whiteSpace: 'nowrap' }}>
+        <h2 className="nowrap-desktop-only" style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '22px', color: '#21201D', textAlign: 'center', fontWeight: '400', marginBottom: '6px' }}>
           Your recipes, organized. Your culinary skills, elevated.
         </h2>
         <p style={{ fontSize: '14px', color: '#7A7468', textAlign: 'center', lineHeight: '1.7', marginBottom: '32px' }}>

@@ -4,7 +4,7 @@
 **Domain:** miseenplacerecipes.com — **live** on Vercel (Production). DNS at Namecheap: A record `@` → `216.198.79.1`, CNAME `www` → domain-specific Vercel value (check Vercel's Domains page for the current one if it ever needs re-adding — it issues a unique per-domain CNAME target, not the generic `cname.vercel-dns.com`).  
 **Note:** misoenplace.app was purchased earlier by mistake (typo). It's kept (owned through the year) and set up as a 308 redirect to miseenplacerecipes.com via Vercel's domain redirect feature — not removed, just forwards traffic.  
 **Stack:** Next.js 16 · React 19 · Tailwind CSS v4 · Supabase · Anthropic Claude API  
-**Last updated:** July 12, 2026 (same day, later session — brand refresh rolled out sitewide)
+**Last updated:** July 12, 2026 (same day, later session — brand refresh rolled out sitewide, deployed to production, and a couple of follow-up polish fixes)
 
 ---
 
@@ -160,6 +160,15 @@ UNSPLASH_ACCESS_KEY=<set in Vercel project env vars — see Unsplash developer d
 - **How It Works section** — commented out of `app/page.tsx` (component file untouched, just not rendered — easy to bring back)
 - **Community hidden** — nav link removed from Header, link removed from Footer, Showcase section reworded away from "community" framing ("Recently added" / "Fresh from the kitchen" instead of "From the community"). The `/community` page, `CommunityPage.tsx`, and its search route are all still fully built, rebranded, and live at the URL — just not linked to anywhere until there's an actual community to show.
 - **Features tiles reduced from 6 to 3** — Import, Learn culinary techniques, AI Meal Planner. Dropped: Scale servings, Community, Link a song tiles (and their now-unused Supabase `featuredSong`/`featuredScale` queries, removed from `Features.tsx`). The underlying features themselves (RecipeScaler's serving-scale UI, the Community page, and the per-recipe Spotify song embed) all still exist and are now rebranded too, in case any come back as a tile later.
+- **"Claude suggests" → "Mise en Place Creations"** — renamed in `MealPlanner.tsx`, both the section eyebrow above the 6-card AI suggestion grid and the small pill badge on each of those cards. The "✓ In your recipes" badge on saved-match cards is unchanged. Code comments still say "Claude" internally (not user-facing, left as-is).
+- **Profile page name position** — in `app/cook/[id]/page.tsx`, the name/recipe-count block next to the avatar no longer bottom-aligns with the avatar via the shared `flex-end` row (which crowded it right against the banner boundary). It now uses `alignSelf: 'flex-start'` + `marginTop: '80px'` to sit further down in the open cream space, independent of the avatar and "Edit profile" button's alignment.
+
+### ✅ Deployed to production (this session's full backlog)
+- Discovered the local git repo's `main` was already in sync with `origin/main`, but a huge amount of prior feature work — Community page, Techniques page, Comments, Favorites, Meal Planner, photo upload, `lib/techniques.ts`, `lib/videoTips.ts`, `lib/units.ts`, the Supabase migration, plus this entire session's rebrand — had never actually been committed to git at all (shown as untracked, not just uncommitted). The live site was serving a May 31 build.
+- Hit a stale, unremovable `.git/index.lock` in the mounted project folder (a FUSE-mount quirk — `rm`/`os.remove` both failed with "Operation not permitted" despite normal-looking file ownership). Worked around it by rsync-ing the whole working tree to a scratch copy outside the mount, committing and pushing from there.
+- GitHub's push protection blocked the first push attempt: `PROJECT.md` had **live plaintext API keys** committed in it (Anthropic, Supabase, Firecrawl, Unsplash). Redacted all of them from this file's Environment Variables section (values now live only in Vercel's project env vars / each provider's dashboard) and pushed again successfully.
+- **Action item for Steve:** since those keys sat in a git-tracked file (even though the push itself was blocked, they were committed locally and briefly present in a rejected push), consider rotating the Anthropic, Firecrawl, and Unsplash keys from their respective dashboards as a precaution. The Supabase anon key is public-safe by design and doesn't need rotation.
+- Everything from this session is now live on `main` → deployed via Vercel's GitHub integration. Added `.DS_Store` to `.gitignore` and stopped tracking the ones already committed, while at it.
 
 ---
 

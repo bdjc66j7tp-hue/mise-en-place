@@ -115,13 +115,13 @@ export default function ImportPage() {
                 key={key}
                 onClick={() => { setMode(key); setError(''); setRecipe(null) }}
                 style={{
-                  flex: 1, padding: '8px 6px', fontSize: '12px', border: 'none',
+                  flex: 1, minWidth: 0, padding: '8px 6px', fontSize: '12px', border: 'none',
                   borderRadius: '8px', cursor: 'pointer',
                   fontWeight: mode === key ? 500 : 400,
                   background: mode === key ? '#5C6B47' : 'transparent',
                   color: mode === key ? '#F3EDE4' : '#7A7468',
                   fontFamily: 'inherit',
-                  whiteSpace: 'nowrap',
+                  textAlign: 'center',
                 }}
               >
                 {label}

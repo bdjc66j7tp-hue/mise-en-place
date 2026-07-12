@@ -24,3 +24,16 @@ body {
   color: var(--foreground);
   font-family: var(--font-montserrat), Arial, Helvetica, sans-serif;
 }
+
+/* Headings that are forced to one line on desktop need to be allowed to
+   wrap on narrow phones — otherwise the overflow forces mobile Safari/
+   Chrome (both WebKit on iOS) to shrink the entire page to fit, which
+   breaks every full-bleed section background sitewide. */
+.nowrap-desktop-only {
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .nowrap-desktop-only {
+    white-space: normal;
+  }
+}

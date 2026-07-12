@@ -39,7 +39,8 @@ export default function BrandLockup({ scale = 1 }: { scale?: number }) {
         </div>
         <div ref={textStackRef}>
           <span style={{
-            display: 'block', fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: `${48 * scale}px`,
+            display: 'block', fontFamily: 'var(--font-playfair), Georgia, serif',
+            fontSize: `min(${48 * scale}px, 9.5vw)`,
             color: '#21201D', fontWeight: '400', lineHeight: '1', whiteSpace: 'nowrap', textAlign: 'center'
           }}>
             Mise en Place
