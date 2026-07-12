@@ -17,9 +17,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       cookies: {
         getAll() { return cookieStore.getAll() },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
-          })
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          } catch {
+            // Called from a Server Component during a normal page render —
+            // only Server Actions/Route Handlers can write cookies. Safe to
+            // ignore here since this route doesn't rely on writing a refreshed
+            // session cookie back; reads still work fine either way.
+          }
         }
       }
     }
