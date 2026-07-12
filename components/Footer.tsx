@@ -41,6 +41,7 @@ export default function Footer() {
             {[
               { label: 'Import a recipe', href: '/import' },
               { label: 'Sign in', href: '/signin' },
+              { label: 'FAQ', href: '/faq' },
             ].map((link) => (
               <Link key={link.href} href={link.href} style={{ display: 'block', fontSize: '12px', color: '#C9C4B8', marginBottom: '6px', textDecoration: 'none' }}>
                 {link.label}
