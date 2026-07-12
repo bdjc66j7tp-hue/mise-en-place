@@ -54,8 +54,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         This is a beta, so bugs and rough edges are expected — please report them. Email{' '}
-        <a href="mailto:steveellis67@gmail.com" style={{ color: '#5C6B47', fontWeight: 500 }}>
-          steveellis67@gmail.com
+        <a href="mailto:miseenplacerecipessupport@gmail.com" style={{ color: '#5C6B47', fontWeight: 500 }}>
+          miseenplacerecipessupport@gmail.com
         </a>{' '}
         with what happened and, if you can, what you were trying to do. Feedback on what’s confusing or missing is just as useful as bug reports.
       </>

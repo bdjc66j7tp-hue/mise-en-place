@@ -178,7 +178,7 @@ UNSPLASH_ACCESS_KEY=<set in Vercel project env vars — see Unsplash developer d
 ### ✅ FAQ page
 - **Page:** `app/faq/page.tsx` — static list of Q&As, styled like the Techniques page header band (olive banner + cream content)
 - Linked from Footer under "Get started"
-- Covers: what the app does, TikTok/Instagram import limitations (and the paste-text workaround), how to import, pricing during beta, serving scaling, techniques, profile privacy, native app timeline, and a feedback/bug-report email (steveellis67@gmail.com)
+- Covers: what the app does, TikTok/Instagram import limitations (and the paste-text workaround), how to import, pricing during beta, serving scaling, techniques, profile privacy, native app timeline, and a feedback/bug-report email (miseenplacerecipessupport@gmail.com — a dedicated support inbox, not Steve's personal address)
 - Written ahead of Steve sending the beta out to testers, specifically to head off the TikTok/Instagram import question
 
 ---
