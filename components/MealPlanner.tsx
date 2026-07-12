@@ -102,7 +102,7 @@ function SuggestionCard({ s }: { s: MealSuggestion }) {
           color: isRecipe ? '#5C6B47' : '#8B6F3E',
           border: `0.5px solid ${isRecipe ? '#E4DACB' : '#E8D5A8'}`,
         }}>
-          {isRecipe ? '✓ In your recipes' : '✦ Claude suggests'}
+          {isRecipe ? '✓ In your recipes' : '✦ Mise en Place Creations'}
         </span>
 
         {/* Title */}
@@ -399,7 +399,7 @@ export default function MealPlanner() {
                 {aiSuggestions.length > 0 && (
                   <div style={{ marginBottom: '20px' }}>
                     <div style={{ fontSize: '11px', color: '#DCE0D2', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-                      Claude suggests
+                      Mise en Place Creations
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
                       {aiSuggestions.map((s, i) => <SuggestionCard key={i} s={s} />)}
